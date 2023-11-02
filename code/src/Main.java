@@ -3,10 +3,10 @@ public class Main {
     private void startProgram() {
         System.out.println("-----Application started-----");
 
-        Resources resources = new Resources();
+        BusStationController busStationController = new BusStationController();
 
-        Thread busScheduler = new Thread(new BusScheduler(resources));
-        Thread passengerScheduler = new Thread(new PassengerScheduler(resources));
+        Thread busScheduler = new Thread(new BusScheduler(busStationController));
+        Thread passengerScheduler = new Thread(new PassengerScheduler(busStationController));
 
         busScheduler.start();
         passengerScheduler.start();

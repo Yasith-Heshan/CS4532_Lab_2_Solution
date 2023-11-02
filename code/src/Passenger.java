@@ -1,8 +1,8 @@
 public class Passenger implements Runnable {
-    private Resources resources;
+    private BusStationController busStationController;
 
-    public Passenger(Resources resources) {
-        this.resources = resources;
+    public Passenger(BusStationController busStationController) {
+        this.busStationController = busStationController;
     }
 
     private void board() {
@@ -13,14 +13,14 @@ public class Passenger implements Runnable {
     public void run() {
         try {
 
-            resources.passengerCntLock.acquire(); // Lock the operations on waitingPassengerCnt variable until the current passenger added to the count
-            resources.waitingPassengerCnt += 1;
+            busStationController.passengerCntLock.acquire(); // Lock the operations on waitingPassengerCnt variable until the current passenger added to the count
+            busStationController.waitingPassengerCnt += 1;
             System.out.println("Passenger on waiting");
-            resources.passengerCntLock.release(); // Release the lock on waitingPassengerCnt variable
+            busStationController.passengerCntLock.release(); // Release the lock on waitingPassengerCnt variable
 
-            resources.busArrival.acquire(); // Wait until the bus arrive
+            busStationController.busArrival.acquire(); // Wait until the bus arrive
             board();
-            resources.passengerBoarded.release(); // Signal about the passenger boarding
+            busStationController.passengerBoarded.release(); // Signal about the passenger boarding
 
         } catch (InterruptedException e) {
             e.printStackTrace();

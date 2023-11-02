@@ -1,32 +1,32 @@
 public class Bus implements Runnable {
-    private Resources resources;
+    private BusStationController busStationController;
 
-    public Bus(Resources resources) {
-        this.resources = resources;
+    public Bus(BusStationController busStationController) {
+        this.busStationController = busStationController;
     }
 
     private void depart(int loadedPassengerCnt) {
-        System.out.println("Loaded passenger count: " + loadedPassengerCnt + "\nWaiting passenger count: " + resources.waitingPassengerCnt);
+        System.out.println("Loaded passenger count: " + loadedPassengerCnt + "\nWaiting passenger count: " + busStationController.waitingPassengerCnt);
         System.out.println("BUS DEPARTED !!! \n");
     }
 
     @Override
     public void run() {
         try {
-            resources.passengerCntLock.acquire(); // Avoid new passengers coming to the bus stop after the bus arrived
+            busStationController.passengerCntLock.acquire(); // Avoid new passengers coming to the bus stop after the bus arrived
             System.out.println("BUS ARRIVED !!! \n");
-            System.out.println("Waiting passenger count: "+ resources.waitingPassengerCnt);
-            int loadingPassengerCnt = Math.min(resources.waitingPassengerCnt,50);
+            System.out.println("Waiting passenger count: "+ busStationController.waitingPassengerCnt);
+            int loadingPassengerCnt = Math.min(busStationController.waitingPassengerCnt,50);
             System.out.println("Loading passenger count : "+ loadingPassengerCnt );
 
             for (int i = 0; i < loadingPassengerCnt; i++) {
-                resources.busArrival.release(); // Signal to the i_th passenger about the bus arrival
-                resources.passengerBoarded.acquire(); // Wait on passenger boarding
+                busStationController.busArrival.release(); // Signal to the i_th passenger about the bus arrival
+                busStationController.passengerBoarded.acquire(); // Wait on passenger boarding
             }
 
-            resources.waitingPassengerCnt = Math.max(resources.waitingPassengerCnt -50 , 0);
+            busStationController.waitingPassengerCnt = Math.max(busStationController.waitingPassengerCnt -50 , 0);
 
-            resources.passengerCntLock.release(); // Signal the capability of coming to the bus stop after departure of the bus
+            busStationController.passengerCntLock.release(); // Signal the capability of coming to the bus stop after departure of the bus
             depart(loadingPassengerCnt);
         } catch (InterruptedException e) {
             e.printStackTrace();

@@ -2,23 +2,20 @@ import java.util.Random;
 
 public class PassengerScheduler implements Runnable {
     public static Random random;
-    private final Resources resources;
+    private final BusStationController busStationController;
 
-    public PassengerScheduler(Resources resources) {
-        this.resources = resources;
+    public PassengerScheduler(BusStationController busStationController) {
+        this.busStationController = busStationController;
         random = new Random();
     }
 
     @Override
     public void run() {
-        int minTime = 100;
-        int maxTime = 1000;
-        int waitTime;
+        double meanTime = 30 * 1000;
         while (true) {
-            new Thread(new Passenger(resources)).start();
+            new Thread(new Passenger(busStationController)).start();
             try {
-                waitTime = random.nextInt(maxTime - minTime) + minTime;
-                Thread.sleep(waitTime);
+                Thread.sleep(Math.round(-Math.log(1 - random.nextFloat())* meanTime));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
